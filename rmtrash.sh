@@ -25,17 +25,17 @@ return_value=$?
 ###如果不存在rm alias，则生成
 if [[ $return_value -ne 0 ]] ;then
     echo first time to run rmtrash
-    echo "alias rm=/rmdir/rmtrash.sh" >>$alias_file && source $alias_file
+    echo "alias rm=/rmdir/rmtrash.sh" >> $alias_file && source $alias_file
 ###如果存在rm alias，且不是指向rmtrash的，则注释掉，区分linux 和mac
 elif [[ "$alias_rm" != "alias rm=/rmdir/rmtrash.sh" ]];then
     echo already has alias rm,and must commit out
     if [[ $os_type == Darwin ]];then
         sed -i .bak 's/^alias\ rm=/#alias\ rm=/g' $alias_file && \
-        echo "alias rm=/rmdir/rmtrash.sh" >>$alias_file && \
+        echo "alias rm=/rmdir/rmtrash.sh" >> $alias_file && \
         source $alias_file
     elif [[ $os_type == Linux ]];then
         sed -i.bak 's/^alias\ rm=/#alias\ rm=/g' $alias_file && \
-        echo "alias rm=/rmdir/rmtrash.sh" >>$alias_file && \
+        echo "alias rm=/rmdir/rmtrash.sh" >> $alias_file && \
         source $alias_file
     fi
 fi
@@ -234,7 +234,7 @@ shift $((OPTIND-1))
 ###将文件名的参数依次传递给rm_mv函数
 while [ $# -ne 0 ];do
     file=$1
-    echo file=$file
+    echo " file = $file"
     rm_mv
     shift
 done
