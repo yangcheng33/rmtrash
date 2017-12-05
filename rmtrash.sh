@@ -27,17 +27,17 @@ return_value=$?
 ###如果不存在rm alias，则生成
 if [[ $return_value -ne 0 ]] ;then
 	echo first time to run rmtrash
-	echo "alias rm=/bin/rmtrash.sh" >>$alias_file && source $alias_file
+	echo "alias rm=/rmfile/rmtrash.sh" >>$alias_file && source $alias_file
 ###如果存在rm alias，且不是指向rmtrash的，则注释掉，区分linux 和mac
-elif [[ "$alias_rm" != "alias rm=/bin/rmtrash.sh" ]];then
+elif [[ "$alias_rm" != "alias rm=/rmfile/rmtrash.sh" ]];then
 	echo already has alias rm,and must commit out
 	if [[ $os_type == Darwin ]];then
 		sed -i .bak 's/^alias\ rm=/#alias\ rm=/g' $alias_file && \
-		echo "alias rm=/bin/rmtrash.sh" >>$alias_file && \
+		echo "alias rm=/rmfile/rmtrash.sh" >>$alias_file && \
 		source $alias_file
 	elif [[ $os_type == Linux ]];then
 		sed -i.bak 's/^alias\ rm=/#alias\ rm=/g' $alias_file && \
-		echo "alias rm=/bin/rmtrash.sh" >>$alias_file && \
+		echo "alias rm=/rmfile/rmtrash.sh" >>$alias_file && \
 		source $alias_file
 	fi
 fi
@@ -73,7 +73,7 @@ rm_mv () {
 	###for file in $file_list ;do
 		#echo $file
 		###提取用户输入参数的文件名、目录名，拼出绝对路径
-		file_name=`basename $file`	
+		file_name=`basename $file`
 		file_dir=$(cd `dirname $file`;pwd)
 		file_fullpath=$file_dir/$file_name
 		###判断要删除的文件或者目录大小是否超过2G
@@ -82,7 +82,7 @@ rm_mv () {
 		#	echo action deny!
 		#else
 		####判断即将删除的文件在trash目录里是否已存在
-		if [[ `ls $trash_dir|grep ^${file_name}$` ]];then	
+		if [[ `ls -a $trash_dir|grep ^${file_name}$` ]];then
 			##已存在，文件名重复，需要rename，想原始名的基础上加后缀
 			trash_dest_path=$trash_dir$file_name$dupfix
 			echo trash目录里已存在$file_name,需要rename $file_name$dupfix
@@ -98,7 +98,7 @@ rm_mv () {
 			###mv成功记录log,记录删除时的文件、目录的路径等信息到log，以便恢复数据
 			mv $file_fullpath $trash_dest_path && \
 			echo $now `date +%s` `whoami` moved from $file_fullpath to $trash_dest_path >> $trash_log && \
-			echo -e "\033[31m\033[05m $file is deleted from $file_fullpath\033[0m" 
+			echo -e "\033[31m\033[05m $file is deleted from $file_fullpath\033[0m"
 			#cat $trash_log
 		fi
 
@@ -110,7 +110,7 @@ rm_mv () {
 rm_list () {
 	echo ----------------------------
 	echo list trash_dir contents:
-	ls $trash_dir
+	ls -a $trash_dir
 }
 
 
@@ -121,8 +121,8 @@ rm_restore () {
 	read reply
 	for file in $reply ;do
 		###判断原始位置的是否有同名文件存在
-		originalpath=`cat $trash_log|grep /$file$|awk  '{print $5}'`
-		if [[ `ls $originalpath` ]];then
+		originalpath=`cat $trash_log|grep /$file$|awk '{print $6}'`
+		if [[ `ls -a $originalpath` ]];then
 			echo -en "originalpath:$originalpath already exists. continue overwrite or not(y/n):"
 			read ack
 			if   [[ $ack == y ]];then
@@ -136,7 +136,7 @@ rm_restore () {
 		###
 		mv $trash_dir$file  $originalpath && \
 		###linux和mac下sed的用法有细微差别，故需通过操作系统类型进行选择对应的sed格式
-		if [[ $os_type == Darwin ]];then 
+		if [[ $os_type == Darwin ]];then
 			sed -i .bak "/\/$file$/d" $trash_log
 			echo os_type=Darwin
 		elif [[ $os_type == Linux ]];then
@@ -179,14 +179,14 @@ rm_delete () {
 	read reply
 		for file in $reply ;do
 			###if file exist then delete it from trash
-			if [[ `ls ${trash_dir}$file` ]];then
+			if [[ `ls -a ${trash_dir}$file` ]];then
 				/bin/rm -fr ${trash_dir}$file && \
 				###linux和mac下sed的用法有细微差别，故需通过操作系统类型进行选择对应的sed格式
 				if [[ $os_type == Darwin ]];then
 					sed -i .bak "/\/$file$/d" $trash_log
 					echo os_type=Darwin
 				elif [[ $os_type == Linux ]];then
-					sed -i.bak "/\/$file$/d" $trash_log		
+					sed -i.bak "/\/$file$/d" $trash_log
 					echo os_type=Linux
 				fi && \
 					echo -e  "\033[32m\033[05m$file  is deleted from trash ${trash_dir}$file \033[0m"
@@ -236,9 +236,7 @@ shift $((OPTIND-1))
 ###将文件名的参数依次传递给rm_mv函数
 while [ $# -ne 0 ];do
 	file=$1
-	echo file=$file 
+	echo file=$file
 	rm_mv
 	shift
 done
-
-
