@@ -3,7 +3,7 @@
 ### rmtrash 是linux和mac下命令行版本rm的回收站，安装后对用户透明，符合正常使用rm的习惯(支持rm -rf file哦)，有了他再也不怕rm时候手颤抖了。
 ### rmtrash stands for "rm trash" which acts just like the system built-in rm command,and just moves the file to the trash for recovery when needed.
 
-
+set -e
 ###trash目录define
 realrm="/bin/rm"
 trash_dir=~/.rmtrash/
@@ -69,7 +69,8 @@ rm_mv () {
     dupfix=.`date +%Y%m%d%H%M%S`
     ###将用户输入的文件循环mv到trash中
     ###for file in $file_list ;do
-        #echo $file
+        # 如果不存在该文件则结束
+        ls $file
         ###提取用户输入参数的文件名、目录名，拼出绝对路径
         file_name=`basename $file`
         file_dir=$(cd `dirname $file`;pwd)
