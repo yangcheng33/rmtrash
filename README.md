@@ -1,4 +1,4 @@
-> rmtrash 是linux和mac下命令行版本rm的回收站，安装后对用户透明，符合正常使用rm的习惯(支持rm -rf file)，有了它再也不怕rm时候手颤抖了(能自动拒绝 rm -rf / 哦)。
+> rmtrash 是linux和mac下命令行版本rm的回收站，安装后对用户透明，符合正常使用rm的习惯(支持rm -rf file)，有了它再也不怕rm时候手颤抖了(能自动拒绝 rm -rf /)。
 >
 > rmtrash stands for "rm trash" which acts just like the system built-in rm command,and just moves the file to the trash for recovery when needed.
 
@@ -53,5 +53,5 @@ options:
 2. `/bin/rm file` 直接删除文件而不经过回收站
 
 
-> 本脚本适用于linux、mac osx系统
+> 本脚本适用于Linux、Mac OSX系统
 
