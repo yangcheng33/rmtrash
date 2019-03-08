@@ -18,8 +18,10 @@ os_type=`uname`
 shell_path=$SHELL
 shell_type=`echo $SHELL|awk -F/ '{print $NF}'`
 alias_file=~/.${shell_type}rc
+set +e
 alias_rm=`cat $alias_file|grep ^"alias rm="`
 return_value=$?
+set -e
 #echo return_value: $return_value
 #echo alias_rm: $alias_rm
 ###如果不存在rm alias，则生成
